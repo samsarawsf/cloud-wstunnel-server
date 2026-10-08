@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*auth-path
+*.log
+.DS_Store
+work/
+deployments/

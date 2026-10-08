@@ -1,0 +1,4 @@
+interface:
+  display_name: "云环境私人服务部署"
+  short_description: "通过 VPS、wstunnel 和 Tailscale 部署云端应用，管理多环境接入及服务转发"
+  default_prompt: "使用 $cloud-wstunnel-server，在新云环境部署我的私人服务，复用 VPS 中转，通过 Tailscale 提供访问地址并验证应用可用。"
