@@ -30,7 +30,7 @@
 - 复用 VPS 稳定公网 WSS 入口、TLS身份和Tailscale地址；不重复安装中转、不重置Tailscale、不复制旧环境的就绪状态。
 - 为新环境建立独立随机鉴权路径与服务端限制条目，只允许分配给它的内网端口。同一环境的多个已批准服务可列为明确端口集合；不同环境不共享监听端口。
 - 部署应用及数据恢复后，启动该环境客户端。应用和隧道分别有运行状态，独立验证。
-- 默认交付私人Tailscale入口，不自动把应用转发端口开放到公网。需要公开访问时依据用户明确要求另行配置入口及认证。
+- 默认同时配置私人 Tailscale 入口和 VPS 公网单端口转发，见 [公网转发](public-forwarding.md)。用户当前明确要求后续部署也带公网入口；仅内网要求优先。先落实应用/前端认证，再开启公网转发，不开放数据库或整段端口。
 
 ## 部署登记
 
@@ -45,6 +45,10 @@
   "vps_reverse_bind": "TAILNET_IP",
   "vps_reverse_port": 19088,
   "entry_path": "/",
+  "private_url": "http://TAILNET_IP:REVERSE_PORT/",
+  "public_url": "VERIFIED_PUBLIC_URL",
+  "public_forward_service": "RECORDED_VPS_SYSTEMD_UNIT",
+  "public_auth_source": "PRIVATE_CONFIGURATION_PATH_ONLY",
   "login_path": "/login",
   "tls_name": "VERIFIED_TLS_NAME",
   "tunnel_compose": "DEPLOYMENT_DIR/compose.tunnel.yaml",

@@ -94,3 +94,5 @@ python3 -m unittest discover -s tests -v
 ```
 
 详见 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题处理见 [SECURITY.md](SECURITY.md)。本仓库采用 [MIT License](LICENSE)；第三方工具保持各自许可证与服务条款。
+
+后续部署默认同时配置 VPS 公网入口和 Tailscale 内网入口。公网开放前验证真正的登录门禁，以及指定 Host/Origin、资源和跳转；公网转发单独管理并支持重启恢复。详见 [公网转发](skills/cloud-wstunnel-server/references/public-forwarding.md)。用户要求仅内网时不开放公网。
