@@ -80,7 +80,7 @@ $cloud-wstunnel-server
 ## 运行边界
 
 - 在本次已验证部署中，Docker 应用通过中转可正常访问；这不保证任意平台、镜像、目的地或长期在线 SLA。
-- `nohup` 在某些云工具中会被清理；应使用平台支持的运行会话，并记录恢复方法。
+- 持续应用转发默认由独立 Docker 容器管理，设置 `restart: unless-stopped`；工具会话只用于短时诊断。自动重启不保证云环境永久在线，也不自动恢复 `unhealthy` 状态。详见 [Docker 客户端部署](skills/cloud-wstunnel-server/references/docker-client.md)。
 - 新环境不默认继承旧数据库和进程。数据持久化、备份和恢复应单独确认。
 - VPS 服务自启和 TLS 证书续期需在持续部署时配置并验证。
 - 本仓库只提供技能、脚本和说明，不提供或捆绑 wstunnel/Tailscale 服务、账号或二进制。

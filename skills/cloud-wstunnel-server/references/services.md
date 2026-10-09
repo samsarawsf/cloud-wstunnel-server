@@ -16,17 +16,8 @@
 1. 在实际运行应用的云对话读取当前状态。确认云端本机应用路径可达、Docker 容器健康、端口已发布到127.0.0.1。不要仅凭另一个对话的端口或之前的部署结果操作。
 2. 用户已经部署时不重复构建或改 compose 文件。首次 Docker 部署参考项目运行说明及当前 runtime 的 Docker 网络/CA规则。对持久数据库确认数据卷和初始化行为，不默认导入旧数据，也不把“容器 healthy”当作数据恢复完成。
 3. VPS 检查新内网端口空闲，备份限制文件，原子追加该环境鉴权条目批准的 TCP 端口。原实践同一云环境条目由 `port: [19082]` 变为 `port: [19082, 19088]`，保持绑定地址 `/32` 不变；热重载后旧隧道仍正常。
-4. 在云端以原有受限文件读取该环境凭证。保持已有健康客户端，启动独立应用客户端，用同一经过验证的代理、CA、SNI及证书验证配置。映射如下：
-
-```sh
-NO_COLOR=true ./wstunnel client \
-  --tls-verify-certificate --tls-sni-override "$TLS_NAME" \
-  -P "$AUTH_PATH" \
-  -R "tcp://$TAILNET_IP:19088:127.0.0.1:8688" \
-  "wss://$PUBLIC_IP:443"
-```
-
-5. 以支持的云工具运行会话保存客户端，记录PID、会话、脱敏日志及映射。无需为增加转发重启应用或MySQL。
+4. 在云端复用该环境权限受限的凭证文件，按 [docker-client.md](docker-client.md) 创建独立应用转发容器，配置 `restart: unless-stopped`。保持代理/CA、SNI和证书验证。默认加入应用的现有 Docker 网络，目标填写应用服务名及容器内端口；容器中的127.0.0.1不是宿主机。原来的 `127.0.0.1:8688` 映射仅用于宿主机客户端，不直接复制到桥接容器。
+5. 用 `docker compose up -d` 启动，只重建转发服务。登记 Compose 路径、容器名、日志命令和重启策略；无需重启应用或MySQL。迁移旧客户端时先用备用端口验证容器，再停止记录的旧客户端并切换，避免相同反向端口被争用。
 6. 从用户设备请求根路径及实际登录页。ai-fin 的正确未登录行为是首页302到当前访问地址的 `/login`，登录页200；表单使用相对路径，资源正常。要求用户确认能打开页面，必要时按已授权范围检查认证后功能。
 
 登录使用应用已有 `FINANCE_AUTH_TOKEN`，它与 wstunnel 路径凭证不同。不要为了检查登录页读取 `.env` 或输出完整环境变量。只有用户明确请求取得口令或认证验证时才按该目的处理对应秘密，不把它交给中转服务器。
@@ -56,9 +47,11 @@ NO_COLOR=true ./wstunnel client \
   "entry_path": "/",
   "login_path": "/login",
   "tls_name": "VERIFIED_TLS_NAME",
-  "tunnel_session_id": "RECORDED_SESSION",
-  "tunnel_pid": "RECORDED_PID",
-  "tunnel_log": "DEPLOYMENT_DIR/ai-fin-client.log",
+  "tunnel_compose": "DEPLOYMENT_DIR/compose.tunnel.yaml",
+  "tunnel_container": "RECORDED_CONTAINER",
+  "tunnel_restart_policy": "unless-stopped",
+  "tunnel_target": "APP_SERVICE:APP_CONTAINER_PORT",
+  "tunnel_log": "docker compose logs --tail 100 app-tunnel",
   "data_volume": "RECORDED_APP_VOLUME",
   "verification": "USER_CONFIRMED_ACCESS"
 }
@@ -69,7 +62,7 @@ NO_COLOR=true ./wstunnel client \
 ## 替换环境与故障恢复
 
 1. 用登记定位当前服务、云对话、数据和端口。先区分应用退出、客户端退出、中转故障和平台环境暂停。
-2. 应用正常而客户端退出：在同一有效环境重新启动该服务客户端，验证用户入口；不重建应用数据库。
+2. 应用正常而客户端退出：检查对应容器状态、ExitCode、OOMKilled、RestartCount及脱敏日志。在有效环境通过该 Compose 服务恢复并验证入口，不重建数据库。旧工具会话客户端按 Docker 迁移流程处理；没有证据时只报告退出事实，不断言由工具、OOM或平台暂停造成。
 3. 平台创建了新环境：重新检查网络和运行时，在新环境部署应用及恢复数据。新实例不自动拥有旧进程、镜像、鉴权文件或数据库卷；先核实实际保留情况，迁移操作按用户授权执行。
 4. 环境迁移优先用新的空闲反向端口验证；切回原端口前，确认旧客户端归属并停止指定旧客户端，避免两个环境争用。用户明确要求同端口替换且旧服务已退出时可直接重建该映射。
 5. 移除退役环境对应的鉴权条目/端口授权，保留其余映射。只停止记录的己方进程/会话，不能凭端口批量杀无关服务。

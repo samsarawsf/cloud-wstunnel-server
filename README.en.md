@@ -53,3 +53,5 @@ python3 -m unittest discover -s tests -v
 Tests use temporary loopback services and do not contact a VPS or cloud environment. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 MIT licensed. Third-party tools retain their own licenses and service terms; no third-party binaries or account credentials are distributed here.
+
+Application tunnels now default to detached Docker Compose services with `restart: unless-stopped`. Tool sessions are for short diagnostics. See [Docker client deployment](skills/cloud-wstunnel-server/references/docker-client.md) for networking, proxy/CA, migration and recovery checks. This does not guarantee availability across cloud suspension or replacement.
