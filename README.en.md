@@ -55,3 +55,5 @@ Tests use temporary loopback services and do not contact a VPS or cloud environm
 MIT licensed. Third-party tools retain their own licenses and service terms; no third-party binaries or account credentials are distributed here.
 
 Application tunnels now default to detached Docker Compose services with `restart: unless-stopped`. Tool sessions are for short diagnostics. See [Docker client deployment](skills/cloud-wstunnel-server/references/docker-client.md) for networking, proxy/CA, migration and recovery checks. This does not guarantee availability across cloud suspension or replacement.
+
+Deployments now default to both a VPS public endpoint and a private Tailscale endpoint, following the owner's explicit preference. Validate access control and exact Host/Origin handling before exposing the public port; retain private-only mode when requested. See [public forwarding](skills/cloud-wstunnel-server/references/public-forwarding.md).

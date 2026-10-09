@@ -1,4 +1,4 @@
 interface:
   display_name: "云环境私人服务部署"
-  short_description: "通过 VPS、wstunnel 和 Tailscale 部署云端应用，由 Docker 管理转发与退出恢复"
-  default_prompt: "使用 $cloud-wstunnel-server，在新云环境部署我的私人服务，复用 VPS 中转，由 Docker 管理 wstunnel 转发并配置自动重启，通过 Tailscale 提供访问地址并验证退出恢复。"
+  short_description: "通过 VPS 公网和内网访问云端应用，Docker 管理转发及退出恢复"
+  default_prompt: "使用 $cloud-wstunnel-server，在新云环境部署我的私人服务，复用 VPS 中转，由 Docker 管理 wstunnel 转发并配置自动重启，配置 VPS 公网及 Tailscale 内网入口，保留访问控制并验证访问和退出恢复。"
